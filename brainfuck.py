@@ -1,7 +1,7 @@
 import re, sys
 
 def execute(commands):
-    cells = [0] * 1024
+    cells = [0]
     cellptr = 0
     codeptr = 0
     
@@ -32,9 +32,9 @@ def execute(commands):
         elif commands[codeptr] == '>':
             cellptr += 1
         elif commands[codeptr] == ',':
-            cells[cellptr] = raw_input()
+            cells[cellptr] = ord(raw_input()[:1])
         elif commands[codeptr] == '.':
-            print chr(cells[cellptr])
+            print chr(cells[cellptr]),
         elif commands[codeptr] == '[':
             if cells[cellptr] == 0:
                 codeptr = opens[codeptr]
@@ -42,6 +42,8 @@ def execute(commands):
             if cells[cellptr] != 0:
                 codeptr = closes[codeptr]
         codeptr += 1
+        if codeptr > len(cells):
+            cells.append(0)
 
 
 
