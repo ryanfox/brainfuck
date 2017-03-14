@@ -1,7 +1,33 @@
-import re, sys
+import re
+import sys
 
-def execute(commands):
-    cells = [0]
+from collections import defaultdict
+
+
+def brackets_are_balanced(bf):
+    if bf.count('[') != bf.count(']'):
+        return False
+
+    depth = 0
+    for symbol in bf:
+        if symbol == '[':
+            depth += 1
+        elif symbol == ']':
+            depth -= 1
+        if depth < 0:
+            return False
+    return True
+
+
+def execute(commands, input_stream=input, output_stream=sys.stdout):
+    """
+    commands is a string containing the brainfuck program.
+    input_stream is a callable, which provides one byte of input when called
+    """
+    if not brackets_are_balanced(commands):
+        return output_stream
+
+    cells = defaultdict(int)
     cellptr = 0
     codeptr = 0
     
@@ -17,8 +43,7 @@ def execute(commands):
             opens[start] = codeptr
             closes[codeptr] = start
         codeptr += 1
-    
-    assert len(loops) == 0, 'opening and closing brackets don\'t match'
+
 
     # reset code pointer and actually run program
     codeptr = 0    
@@ -32,9 +57,9 @@ def execute(commands):
         elif commands[codeptr] == '>':
             cellptr += 1
         elif commands[codeptr] == ',':
-            cells[cellptr] = ord(raw_input()[:1])
+            cells[cellptr] = ord(input_stream()[0])
         elif commands[codeptr] == '.':
-            print chr(cells[cellptr]),
+            print(chr(cells[cellptr] % 256), end='', file=output_stream),
         elif commands[codeptr] == '[':
             if cells[cellptr] == 0:
                 codeptr = opens[codeptr]
@@ -42,19 +67,16 @@ def execute(commands):
             if cells[cellptr] != 0:
                 codeptr = closes[codeptr]
         codeptr += 1
-        if codeptr > len(cells):
-            cells.append(0)
 
+    return output_stream
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print 'usage: python brainfuck.py <input.b>'
+        print('usage: python brainfuck.py <input.b>')
         sys.exit(1)
     with open(sys.argv[1]) as f:
         program = f.read()
         filtered = re.sub('[^+-[],.<>]', '', program)
         commands = list(filtered)
         execute(commands)
-
-

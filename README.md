@@ -3,4 +3,4 @@ A simple Brainfuck interpreter implemented in python.
 
 It's not performant or optimized in any way, but it works.  Maybe I'll improve it if I feel like it.
 
-Usage: `python brainfuck.py <your_brainfuck_file.b>`
+Usage: `python3 brainfuck.py <your_brainfuck_file.b>`
